@@ -1,8 +1,11 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Security.Cryptography;
+using HarmonyLib;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.UI;
 using SpeechMod.Unity;
-using SpeechMod.Unity.Extensions;
+using SpeechMod.voice;
 using UnityEngine;
 
 namespace SpeechMod.Patches;
@@ -14,7 +17,7 @@ public static class StaticCanvas_Patch
 
     public static void Postfix()
     {
-        if (!Main.Enabled)
+        if (!Main.VoiceSettings.Enabled)
             return;
 
 #if DEBUG
@@ -42,7 +45,11 @@ public static class StaticCanvas_Patch
 
         var buttonGameObject = ButtonFactory.CreatePlayButton(parent, () =>
         {
-            Main.Speech.SpeakDialog(Game.Instance?.DialogController?.CurrentCue?.DisplayText);
+            var text = Game.Instance?.DialogController?.CurrentCue?.DisplayText ?? string.Empty;
+            var speaker = Game.Instance?.DialogController?.CurrentSpeakerName;
+            var gender = Game.Instance?.DialogController?.CurrentSpeaker?.Gender ?? Gender.Female;
+            var key = Game.Instance?.DialogController?.CurrentCue?.Text?.Key ?? string.Empty;
+            _ = VoicePlayer.PlayText(text, key, gender, speaker);
         });
 
         buttonGameObject.name = "SpeechButton";

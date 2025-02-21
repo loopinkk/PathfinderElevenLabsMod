@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
-using Kingmaker.UI.MVVM._PCView.Crusade.CombatResult;
-using SpeechMod.Unity.Extensions;
-using UnityEngine;
-
-#if DEBUG
 using Kingmaker;
-#endif
+using Kingmaker.UI.MVVM._PCView.Crusade.CombatResult;
+using SpeechMod.Unity;
+using UnityEngine;
 
 namespace SpeechMod.Patches;
 
@@ -14,7 +11,7 @@ public static class CombatResultView_Patch
 {
     public static void Postfix()
     {
-        if (!Main.Enabled)
+        if (!Main.VoiceSettings.Enabled)
             return;
 
 #if DEBUG

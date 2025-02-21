@@ -1,7 +1,10 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Security.Cryptography;
+using HarmonyLib;
+using Kingmaker.Blueprints;
 using Kingmaker.UI.MVVM._PCView.ServiceWindows.Journal;
 using SpeechMod.Unity;
-using SpeechMod.Unity.Extensions;
+using SpeechMod.voice;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +20,7 @@ public static class JournalQuestObjective_Patch
 
     public static void Postfix()
     {
-        if (!Main.Enabled)
+        if (!Main.VoiceSettings.Enabled)
             return;
 
 #if DEBUG
@@ -38,7 +41,7 @@ public static class JournalQuestObjective_Patch
             return;
         }
 
-        var isFirst = true;
+        bool isFirst = true;
         foreach (var textMeshPro in allTexts)
         {
             var tmpTransform = textMeshPro.transform;
@@ -65,7 +68,12 @@ public static class JournalQuestObjective_Patch
 #endif
             button = ButtonFactory.CreatePlayButton(tmpTransform.transform, () =>
             {
-                Main.Speech.Speak(textMeshPro.text);
+                var text = textMeshPro.text ?? string.Empty;
+                Main.WaveOutEvent?.Stop();
+                using var md5 = MD5.Create();
+                var inputBytes = System.Text.Encoding.ASCII.GetBytes(text);
+                var guid = new Guid(md5.ComputeHash(inputBytes));
+                _ = VoicePlayer.PlayText(text, guid.ToString(), Gender.Female, Constants.Narrator);
             });
             button.name = m_ButtonName;
             button.transform.localRotation = Quaternion.Euler(0, 0, 90);

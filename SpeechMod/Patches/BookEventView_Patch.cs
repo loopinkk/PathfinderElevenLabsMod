@@ -1,12 +1,9 @@
 ﻿using HarmonyLib;
+using Kingmaker;
 using Kingmaker.UI.MVVM._PCView.Dialog.BookEvent;
 using Kingmaker.UI.MVVM._PCView.Dialog.Dialog;
-using SpeechMod.Unity.Extensions;
+using SpeechMod.Unity;
 using UnityEngine;
-
-#if DEBUG
-using Kingmaker;
-#endif
 
 namespace SpeechMod.Patches;
 
@@ -18,13 +15,8 @@ public static class BookEventView_Patch
 
     public static void Postfix()
     {
-        if (!Main.Enabled)
+        if (!Main.VoiceSettings.Enabled)
             return;
-
-#if DEBUG
-        var sceneName = Game.Instance.CurrentlyLoadedArea.ActiveUIScene.SceneName;
-        Debug.Log($"{nameof(BookEventView<DialogAnswerPCView>)}_SetCues_Postfix @ {sceneName}");
-#endif
 
         var cuesBlock = UIHelper.TryFindInStaticCanvas(CANVAS_CUES_BLOCK_PATH, GLOBALMAP_CUES_BLOCK_PATH);
 
