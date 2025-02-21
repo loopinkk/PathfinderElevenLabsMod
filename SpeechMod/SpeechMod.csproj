@@ -11,7 +11,7 @@
 		<PathfinderWOTRData>$(LocalAppData)Low\Owlcat Games\Pathfinder Wrath Of The Righteous</PathfinderWOTRData>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-	  <OutputPath>F:\SteamLibrary\steamapps\common\Pathfinder Second Adventure\Mods\SpeechMod</OutputPath>
+	  <OutputPath>F:\SteamLibrary\steamapps\common\Pathfinder Second Adventure\Mods\PathfinderElevenLabsMod\</OutputPath>
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	</PropertyGroup>
 	<ItemGroup>
