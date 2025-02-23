@@ -23,6 +23,7 @@ Files are saved locally, so you can replay the game without additional cost (not
  4. Install the mod by dragging the zip file from step 3 into the Unity Mod Manager window under the Mods tab. Alternatively locate the zip file after clicking the "Install" button in Unity Mod Manager.
  5. Clone the voices you want to use in the game. (See below for more information) 
  6. **IMPORTANT:** Fill in the `settings.json` file in the mod folder with the settings you want. (See below for more information)
+ 7. Optional: download playthrough files (see below for more information)
 
  *If running on OSX 64-bit you might need to use the *mono console.exe* command (see UMM documentation for further)
 
@@ -219,6 +220,12 @@ When inspecting a character, the story of that character is displayed both under
 ![Stories give companions depth.](https://dashvoid.com/speechmod/wrath/story_1_0_4.png)
 
 ---
+
+### Playthrough files
+
+Unzip and place the playthrough files in the `AudioSavePath` (default is `.\Mods\PathfinderElevenLabsMod\mp3`) to use them in the game.
+
+1. Prologue (High quality: `eleven_multilingual_v2`) - [Download](https://drive.google.com/file/d/1StGFPK-wuqjwVsK3H86ibcY5gkL0A82w/view?usp=sharing)
 
 ### Acknowledgments
 - [Osmodium](https://github.com/Osmodium) for creating the original mod.
