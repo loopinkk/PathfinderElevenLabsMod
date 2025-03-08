@@ -23,6 +23,7 @@ public class VoiceSettings
     public string Model { get; set; } = "";
     public Dictionary<string, string> NamedCharacters { get; set; } = new();
     public string AudioSavePath { get; set; }
+    public bool SaveHighQuality { get; set; }    
 
     public static VoiceSettings Load(string path)
     {

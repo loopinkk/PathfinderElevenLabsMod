@@ -1,47 +1,82 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Kingmaker.Blueprints.Encyclopedia;
+using AngleSharp;
+using AngleSharp.Dom;
+using INode = AngleSharp.Dom.INode;
 
 namespace SpeechMod;
 
 public static class TextParser
 {
-  public static (string finalName, string text) MakeTextForVoice(string text, string name)
+  public static async Task<(string finalName, string text)> MakeTextForVoice(string text, string name)
   {
     if (name == Constants.Narrator)
       return (name, text);
 
-    var (narratorValues, speakerValues) = SeparateNarratorAndSpeaker(text);
+    var (narratorValues, speakerValues) = await SeparateNarratorAndSpeaker(text);
 
-
-    var joinedNarratorValues = string.Join(", ", narratorValues);
-    var joinedSpeakerValues = string.Join("... ...", speakerValues); // ellipsis is for a pause when sent to the TTS
-
-    return speakerValues.Count == 0
-      ? (Constants.Narrator, joinedNarratorValues) 
-      : (name, joinedSpeakerValues);
+    return string.IsNullOrEmpty(speakerValues)
+      ? (Constants.Narrator, narratorValues) 
+      : (name, speakerValues);
   }
 
-  private static (List<string> NarratorValues, List<string> SpeakerValues) SeparateNarratorAndSpeaker(string input)
-  {
-    List<string> Extract(MatchCollection collection) =>
-      collection
-        .Cast<Match>()
-        .Select(match => match.Groups[1].Value)
-        .ToList();
+  private static async Task<(string narratorValue, string speakerValue)> SeparateNarratorAndSpeaker(string markup)
+    {
+        var validMarkup = PreprocessMarkup(markup);
 
-    // Regex to match NarratorValues
-    var narratorRegex = new Regex(@"<color=#616060>(.*?)</color>");
-    var narratorMatches = narratorRegex.Matches(input);
+        var config = Configuration.Default;
+        var context = BrowsingContext.New(config);
+        var document = await context.OpenAsync(req => req.Content($"<root>{validMarkup}</root>")); // Wrap in <root> to ensure valid parsing
 
-    var narratorValues = Extract(narratorMatches);
+        List<string> narratorText = new();
+        List<string> speakerText = new();
 
-    // Regex to match SpeakerValues
-    var speakerRegex = new Regex("\"(.*?)\"");
-    var speakerMatches = speakerRegex.Matches(input);
+        foreach (var node in document.Body?.FirstChild?.ChildNodes ?? Enumerable.Empty<INode>())
+        {
+            ExtractTextFromNodes(node, isNarrator: false, narratorText, speakerText);
+        }
 
-    var speakerValues = Extract(speakerMatches);
+        return (string.Join(" ", narratorText).Trim(), string.Join(" ", speakerText).Trim());
+    }
 
-    return (narratorValues, speakerValues);
-  }
+    private static string PreprocessMarkup(string markup)
+    {
+        // Convert <color=#XXXXXX> to <color value="#XXXXXX">
+        markup = Regex.Replace(markup, @"<color=#([0-9A-Fa-f]+)>", @"<color value=""#$1"">");
+
+        // Convert <link="text"> to <link value="text">
+        markup = Regex.Replace(markup, @"<link=""([^""]+)"">", @"<link value=""$1"">");
+
+        return markup;
+    }
+
+    private static void ExtractTextFromNodes(INode node, bool isNarrator, List<string> narratorText, List<string> speakerText)
+    {
+        if (node is IElement element && element.TagName == "COLOR")
+        {
+            var colorValue = element.GetAttribute("value");
+            if (colorValue == "#616060")
+                isNarrator = true;
+        }
+
+        if (node.NodeType == NodeType.Text)
+        {
+            var text = node.TextContent.Trim();
+            if (!string.IsNullOrEmpty(text))
+            {
+                if (isNarrator)
+                    narratorText.Add(text);
+                else
+                    speakerText.Add(text);
+            }
+        }
+
+        foreach (var child in node.ChildNodes)
+        {
+            ExtractTextFromNodes(child, isNarrator, narratorText, speakerText);
+        }
+    }
 }
