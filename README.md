@@ -226,6 +226,7 @@ When inspecting a character, the story of that character is displayed both under
 Unzip and place the playthrough files in the `AudioSavePath` (default is `.\Mods\PathfinderElevenLabsMod\mp3`) to use them in the game.
 
 1. Prologue (High quality: `eleven_multilingual_v2`) - [Download](https://drive.google.com/file/d/1StGFPK-wuqjwVsK3H86ibcY5gkL0A82w/view?usp=sharing)
+2. Prologue -> Act 3 (Mixed quality: `eleven_multilingual_v2`, Character name: Commander, Character Gender: F) - [Download](https://drive.google.com/file/d/1UKMoechchyPmUqYp1rNx451BHmUScDb-/view?usp=sharing)
 
 ### Acknowledgments
 - [Osmodium](https://github.com/Osmodium) for creating the original mod.
